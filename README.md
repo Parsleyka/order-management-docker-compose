@@ -75,7 +75,8 @@ Once the containers are up and running:
 *   **Database Admin (pgAdmin):**
     *   Access pgAdmin to view/manage the PostgreSQL database:
     *   **[http://localhost:5050](http://localhost:5050)** (or the port mapped in `docker-compose.yml`)
-    *   Login using the credentials defined in your `.env` file (`DATABASE_PASSWORD`).
+    *   Login Email(admin@admin.com) Password(admin).
+    *   Login to database using the credentials defined in your `.env` file. (`DATABASE_PASSWORD`)
     *   *Note:* The database is automatically seeded with some mock data during the backend container's startup process (check backend Dockerfile/entrypoint) for testing purposes.
 
 ---
