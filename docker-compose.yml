@@ -1,0 +1,71 @@
+services:
+  backend:
+    image: parsleyua/order-management-back
+    container_name: my-backend
+    depends_on:
+      - db
+      - pgadmin
+    ports:
+      - "${SERVER_PORT}:${SERVER_PORT}"
+    environment:
+      SERVER_URL: ${SERVER_URL}
+      DATABASE_URL: ${DATABASE_URL}
+      SERVER_PORT: ${SERVER_PORT}
+    volumes:
+      - .:/usr/src/app
+    restart: always
+
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: ${DATABASE_USER}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      POSTGRES_DB: ${DATABASE_NAME}
+    ports:
+      - "${DATABASE_PORT}:${DATABASE_PORT}"
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    user: root
+    configs:
+      - source: servers.json
+        target: /pgadmin4/servers.json
+    depends_on:
+      - db
+
+  frontend:
+    image: parsleyua/order-management-front
+    container_name: my-frontend
+    ports:
+      - "${VITE_HOST_PORT}:${VITE_HOST_PORT}"
+    environment:
+      VITE_BACKEND_PORT: ${VITE_BACKEND_PORT}
+      VITE_BACKEND_URL: ${VITE_BACKEND_URL}
+      VITE_HOST_URL: ${VITE_HOST_URL}
+      VITE_HOST_PORT: ${VITE_HOST_PORT}
+    depends_on:
+      - db
+      - backend
+
+volumes:
+  db_data:
+
+configs:
+  servers.json:
+    content: |
+      {"Servers": {"1": {
+        "Group": "Servers",
+        "Name": "My Local Postgres 16.1",
+        "Host": "db",
+        "Port": ${DATABASE_PORT},
+        "MaintenanceDB": "${DATABASE_NAME}",
+        "Username": "${DATABASE_USER}",
+        "SSLMode": "prefer"
+      }}}
